@@ -1,61 +1,19 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { dndzone } from 'svelte-dnd-action';
 	import { flip } from 'svelte/animate';
 	import type { DndEvent } from 'svelte-dnd-action';
 	import DeleteItemButton from '$lib/components/deleteItemButton.svelte';
 	import { fade } from 'svelte/transition';
+	import { createDefaultTask, taskStore } from '$lib/stores/taskStore';
+	import { QuadrantTypes } from '$lib/types';
+	import type { QuadrantType, Task } from '$lib/types';
 
 	let lastDeletedTask: Task | null = null;
 	let showUndo = false;
 	let undoTimeout: ReturnType<typeof setTimeout>;
 
-	interface Task {
-		id: number;
-		text: string;
-		quadrant: QuadrantType;
-	}
-
-	type QuadrantType =
-		| 'urgent-important'
-		| 'not-urgent-important'
-		| 'urgent-not-important'
-		| 'not-urgent-not-important'
-		| 'unassigned';
-
-	const QuadrantTypes = {
-		URGENT_IMPORTANT: 'urgent-important' as QuadrantType,
-		NOT_URGENT_IMPORTANT: 'not-urgent-important' as QuadrantType,
-		URGENT_NOT_IMPORTANT: 'urgent-not-important' as QuadrantType,
-		NOT_URGENT_NOT_IMPORTANT: 'not-urgent-not-important' as QuadrantType,
-		UNASSIGNED: 'unassigned' as QuadrantType
-	};
-
 	const flipDurationMs = 150;
-	let mounted = false;
-
-	let nextId = 9;
 	let newTaskText = '';
-
-	const defaultTasks = {
-		unassignedTasks: [{ id: 9, text: 'New task', quadrant: QuadrantTypes.UNASSIGNED }] as Task[],
-		urgentImportant: [
-			{ id: 1, text: 'Critical deadline', quadrant: QuadrantTypes.URGENT_IMPORTANT },
-			{ id: 2, text: 'Emergency meeting', quadrant: QuadrantTypes.URGENT_IMPORTANT }
-		] as Task[],
-		notUrgentImportant: [
-			{ id: 3, text: 'Exercise', quadrant: QuadrantTypes.NOT_URGENT_IMPORTANT },
-			{ id: 4, text: 'Career planning', quadrant: QuadrantTypes.NOT_URGENT_IMPORTANT }
-		] as Task[],
-		urgentNotImportant: [
-			{ id: 5, text: 'Answer emails', quadrant: QuadrantTypes.URGENT_NOT_IMPORTANT },
-			{ id: 6, text: 'Phone calls', quadrant: QuadrantTypes.URGENT_NOT_IMPORTANT }
-		] as Task[],
-		notUrgentNotImportant: [
-			{ id: 7, text: 'Social media', quadrant: QuadrantTypes.NOT_URGENT_NOT_IMPORTANT },
-			{ id: 8, text: 'YouTube videos', quadrant: QuadrantTypes.NOT_URGENT_NOT_IMPORTANT }
-		] as Task[]
-	};
 
 	let unassignedTasks: Task[] = [];
 	let urgentImportant: Task[] = [];
@@ -63,146 +21,58 @@
 	let urgentNotImportant: Task[] = [];
 	let notUrgentNotImportant: Task[] = [];
 
-	function loadTasks() {
-		const savedTasks = localStorage.getItem('eisenhowerTasks');
-		console.log('loaded tasks', savedTasks);
-		if (savedTasks) {
-			const parsed = JSON.parse(savedTasks);
-			unassignedTasks = parsed.unassignedTasks;
-			urgentImportant = parsed.urgentImportant;
-			notUrgentImportant = parsed.notUrgentImportant;
-			urgentNotImportant = parsed.urgentNotImportant;
-			notUrgentNotImportant = parsed.notUrgentNotImportant;
-
-			const allTasks = [
-				...unassignedTasks,
-				...urgentImportant,
-				...notUrgentImportant,
-				...urgentNotImportant,
-				...notUrgentNotImportant
-			];
-			nextId = Math.max(...allTasks.map((task) => task.id)) + 1;
-		} else {
-			unassignedTasks = defaultTasks.unassignedTasks;
-			urgentImportant = defaultTasks.urgentImportant;
-			notUrgentImportant = defaultTasks.notUrgentImportant;
-			urgentNotImportant = defaultTasks.urgentNotImportant;
-			notUrgentNotImportant = defaultTasks.notUrgentNotImportant;
-		}
-	}
-
-	function saveTasks() {
-		if (!mounted) return;
-		console.log('saving tasks');
-
-		const tasksToSave = {
-			unassignedTasks,
-			urgentImportant,
-			notUrgentImportant,
-			urgentNotImportant,
-			notUrgentNotImportant
-		};
-		localStorage.setItem('eisenhowerTasks', JSON.stringify(tasksToSave));
-	}
-
+	// Subscribe to taskStore changes
 	$: {
-		if (mounted) {
-			saveTasks();
-		}
+		unassignedTasks = $taskStore.filter((t) => t.quadrant === QuadrantTypes.UNASSIGNED);
+		urgentImportant = $taskStore.filter((t) => t.quadrant === QuadrantTypes.URGENT_IMPORTANT);
+		notUrgentImportant = $taskStore.filter(
+			(t) => t.quadrant === QuadrantTypes.NOT_URGENT_IMPORTANT
+		);
+		urgentNotImportant = $taskStore.filter(
+			(t) => t.quadrant === QuadrantTypes.URGENT_NOT_IMPORTANT
+		);
+		notUrgentNotImportant = $taskStore.filter(
+			(t) => t.quadrant === QuadrantTypes.NOT_URGENT_NOT_IMPORTANT
+		);
 	}
-
-	onMount(() => {
-		loadTasks();
-		mounted = true;
-	});
 
 	function addTask() {
 		if (newTaskText.trim()) {
-			unassignedTasks = [
-				...unassignedTasks,
-				{
-					id: nextId++,
-					text: newTaskText,
+			taskStore.addTask(
+				createDefaultTask({
+					title: newTaskText,
 					quadrant: QuadrantTypes.UNASSIGNED
-				}
-			];
+				})
+			);
 			newTaskText = '';
 		}
-		saveTasks();
 	}
 
-	function removeTask(taskId: number, quadrant: QuadrantType) {
-		let removedTask: Task | undefined;
-
-		switch (quadrant) {
-			case QuadrantTypes.UNASSIGNED:
-				removedTask = unassignedTasks.find((task) => task.id === taskId);
-				unassignedTasks = unassignedTasks.filter((task) => task.id !== taskId);
-				break;
-			case QuadrantTypes.URGENT_IMPORTANT:
-				removedTask = urgentImportant.find((task) => task.id === taskId);
-				urgentImportant = urgentImportant.filter((task) => task.id !== taskId);
-				break;
-			case QuadrantTypes.NOT_URGENT_IMPORTANT:
-				removedTask = notUrgentImportant.find((task) => task.id === taskId);
-				notUrgentImportant = notUrgentImportant.filter((task) => task.id !== taskId);
-				break;
-			case QuadrantTypes.URGENT_NOT_IMPORTANT:
-				removedTask = urgentNotImportant.find((task) => task.id === taskId);
-				urgentNotImportant = urgentNotImportant.filter((task) => task.id !== taskId);
-				break;
-			case QuadrantTypes.NOT_URGENT_NOT_IMPORTANT:
-				removedTask = notUrgentNotImportant.find((task) => task.id === taskId);
-				notUrgentNotImportant = notUrgentNotImportant.filter((task) => task.id !== taskId);
-				break;
-		}
-
-		if (removedTask) {
-			lastDeletedTask = removedTask;
+	function removeTask(taskId: string) {
+		const task = $taskStore.find((t) => t.id === taskId);
+		if (task) {
+			lastDeletedTask = task;
 			showUndo = true;
 
-			// Clear any existing timeout
 			if (undoTimeout) clearTimeout(undoTimeout);
 
-			// Hide the undo button after 5 seconds
 			undoTimeout = setTimeout(() => {
 				showUndo = false;
 				lastDeletedTask = null;
 			}, 5000);
 		}
-
-		saveTasks();
+		taskStore.removeTask(taskId);
 	}
 
-	// Add undo function
 	function undoDelete() {
 		if (!lastDeletedTask) return;
-
-		switch (lastDeletedTask.quadrant) {
-			case QuadrantTypes.UNASSIGNED:
-				unassignedTasks = [...unassignedTasks, lastDeletedTask];
-				break;
-			case QuadrantTypes.URGENT_IMPORTANT:
-				urgentImportant = [...urgentImportant, lastDeletedTask];
-				break;
-			case QuadrantTypes.NOT_URGENT_IMPORTANT:
-				notUrgentImportant = [...notUrgentImportant, lastDeletedTask];
-				break;
-			case QuadrantTypes.URGENT_NOT_IMPORTANT:
-				urgentNotImportant = [...urgentNotImportant, lastDeletedTask];
-				break;
-			case QuadrantTypes.NOT_URGENT_NOT_IMPORTANT:
-				notUrgentNotImportant = [...notUrgentNotImportant, lastDeletedTask];
-				break;
-		}
-
+		taskStore.addTask(lastDeletedTask);
 		showUndo = false;
 		lastDeletedTask = null;
 		if (undoTimeout) clearTimeout(undoTimeout);
-		saveTasks();
 	}
 
-	function handleDndConsider(e: CustomEvent<DndEvent<Task>>, quadrant: QuadrantType) {
+	function handleDndConsider(e: CustomEvent<DndEvent<Task>>, quadrant: string) {
 		const { items } = e.detail;
 		switch (quadrant) {
 			case QuadrantTypes.UNASSIGNED:
@@ -225,25 +95,9 @@
 
 	function handleDndFinalize(e: CustomEvent<DndEvent<Task>>, quadrant: QuadrantType) {
 		const { items } = e.detail;
-		items.forEach((item) => (item.quadrant = quadrant));
-		switch (quadrant) {
-			case QuadrantTypes.UNASSIGNED:
-				unassignedTasks = items;
-				break;
-			case QuadrantTypes.URGENT_IMPORTANT:
-				urgentImportant = items;
-				break;
-			case QuadrantTypes.NOT_URGENT_IMPORTANT:
-				notUrgentImportant = items;
-				break;
-			case QuadrantTypes.URGENT_NOT_IMPORTANT:
-				urgentNotImportant = items;
-				break;
-			case QuadrantTypes.NOT_URGENT_NOT_IMPORTANT:
-				notUrgentNotImportant = items;
-				break;
-		}
-		saveTasks();
+		items.forEach((item) => {
+			taskStore.updateTask({ ...item, quadrant });
+		});
 	}
 </script>
 
@@ -287,8 +141,8 @@
 					animate:flip={{ duration: flipDurationMs }}
 					class="group relative mb-2 cursor-move rounded bg-gray-50 p-2 shadow dark:bg-neutral-700 dark:text-neutral-100"
 				>
-					{item.text}
-					<DeleteItemButton removeTask={() => removeTask(item.id, item.quadrant)} />
+					{item.title}
+					<DeleteItemButton removeTask={() => removeTask(item.id)} />
 				</div>
 			{/each}
 		</div>
@@ -315,8 +169,8 @@
 							animate:flip={{ duration: flipDurationMs }}
 							class="group relative mb-2 cursor-move rounded bg-white p-2 shadow dark:bg-neutral-700 dark:text-neutral-100"
 						>
-							{item.text}
-							<DeleteItemButton removeTask={() => removeTask(item.id, item.quadrant)} />
+							{item.title}
+							<DeleteItemButton removeTask={() => removeTask(item.id)} />
 						</div>
 					{/each}
 				</div>
@@ -346,8 +200,8 @@
 							animate:flip={{ duration: flipDurationMs }}
 							class="group relative mb-2 cursor-move rounded bg-white p-2 shadow dark:bg-neutral-700 dark:text-neutral-100"
 						>
-							{item.text}
-							<DeleteItemButton removeTask={() => removeTask(item.id, item.quadrant)} />
+							{item.title}
+							<DeleteItemButton removeTask={() => removeTask(item.id)} />
 						</div>
 					{/each}
 				</div>
@@ -371,8 +225,8 @@
 							animate:flip={{ duration: flipDurationMs }}
 							class="group relative mb-2 cursor-move rounded bg-white p-2 shadow dark:bg-neutral-700 dark:text-neutral-100"
 						>
-							{item.text}
-							<DeleteItemButton removeTask={() => removeTask(item.id, item.quadrant)} />
+							{item.title}
+							<DeleteItemButton removeTask={() => removeTask(item.id)} />
 						</div>
 					{/each}
 				</div>
@@ -396,8 +250,8 @@
 							animate:flip={{ duration: flipDurationMs }}
 							class="group relative mb-2 cursor-move rounded bg-white p-2 shadow dark:bg-neutral-700 dark:text-neutral-100"
 						>
-							{item.text}
-							<DeleteItemButton removeTask={() => removeTask(item.id, item.quadrant)} />
+							{item.title}
+							<DeleteItemButton removeTask={() => removeTask(item.id)} />
 						</div>
 					{/each}
 				</div>
@@ -412,7 +266,7 @@
 		>
 			<span>
 				<span class="font-bold">
-					{lastDeletedTask.text}
+					{lastDeletedTask.title}
 				</span> deleted</span
 			>
 			<button

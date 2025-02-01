@@ -1,5 +1,5 @@
 <script lang="ts">
-	let tools = [{ name: 'Eisenhower-Matrix', link: 'eisenhower' }];
+	import { tools } from '$lib/config/tools';
 	import { base } from '$app/paths';
 </script>
 
@@ -7,15 +7,20 @@
 	<h1 class="text-xl">Welcome to Metis</h1>
 	<div>
 		<h3 class="text-lg">Available Tools</h3>
-		<ul>
+		<div class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
 			{#each tools as tool}
-				<li>
+				<div class="rounded-lg border p-4 transition-shadow hover:shadow-lg">
 					<a
-						class="text-blue-500 hover:underline dark:text-blue-400"
-						href="{base}/tools/{tool.link}">{tool.name}</a
+						class="text-lg text-blue-500 hover:underline dark:text-blue-400"
+						href="{base}/tools/{tool.link}"
 					>
-				</li>
+						{tool.name}
+					</a>
+					<p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
+						{tool.description}
+					</p>
+				</div>
 			{/each}
-		</ul>
+		</div>
 	</div>
 </div>
