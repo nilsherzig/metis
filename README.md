@@ -1,38 +1,19 @@
-# sv
+# Metis
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+Metis is a web/mobile app providing visual tools that empower you to work through decision-making, conflict resolution, and planning on your own terms. Named after the Greek goddess Metis, the app offers frameworks and methods that help you develop your own practical solutions to complex issues.
 
-## Creating a project
+## Project Goals
 
-If you're seeing this, you've probably already done this step. Congrats!
+The core goals of Metis are:
 
-```bash
-# create a new project in the current directory
-npx sv create
+1. **Clarify Complexity**: Break down problems, decisions, and conflicts into visual maps and diagrams like issue trees, diagramming methods, and matrices. These tools enable you to organize your own thinking and information.
 
-# create a new project in my-app
-npx sv create my-app
-```
+2. **Support Better Choices**: Learn to use visual frameworks like the Eisenhower Matrix to prioritize tasks, evaluate options, and make decisions that align with your principles - not by having choices made for you.
 
-## Developing
+3. **Help Address Conflicts**: Master diagramming techniques to map different perspectives in a conflict, discover root causes yourself, and work toward reasonable resolutions through your own understanding.
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+4. **Assist with Planning**: Leverage structured methods to outline your own plans, think through scenarios independently, and prepare personalized approaches to challenges.
 
-```bash
-npm run dev
+5. **Aid Personal Growth**: The tools aim to strengthen your own practical judgment, foresight, and problem-solving capabilities through active practice.
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+Metis provides helpful visualization tools and methods for approaching complex situations. Like its mythological namesake, the app strives to be a catalyst for developing your own wisdom and solutions.
