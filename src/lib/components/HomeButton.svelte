@@ -1,4 +1,12 @@
-<a href="/" class="rounded-lg p-2 hover:bg-neutral-200 dark:hover:bg-neutral-700" aria-label="Home">
+<script lang="ts">
+	import { base } from '$app/paths';
+</script>
+
+<a
+	href="{base}/"
+	class="rounded-lg p-2 hover:bg-neutral-200 dark:hover:bg-neutral-700"
+	aria-label="Home"
+>
 	<svg
 		xmlns="http://www.w3.org/2000/svg"
 		fill="none"
