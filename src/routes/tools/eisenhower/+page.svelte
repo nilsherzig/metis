@@ -6,7 +6,7 @@
 	import { fade } from 'svelte/transition';
 	import { createDefaultTask, taskStore } from '$lib/stores/taskStore';
 	import { QuadrantTypes } from '$lib/types';
-	import type { Task } from '$lib/types';
+	import type { QuadrantType, Task } from '$lib/types';
 
 	let lastDeletedTask: Task | null = null;
 	let showUndo = false;
@@ -93,7 +93,7 @@
 		}
 	}
 
-	function handleDndFinalize(e: CustomEvent<DndEvent<Task>>, quadrant: string) {
+	function handleDndFinalize(e: CustomEvent<DndEvent<Task>>, quadrant: QuadrantType) {
 		const { items } = e.detail;
 		items.forEach((item) => {
 			taskStore.updateTask({ ...item, quadrant });
