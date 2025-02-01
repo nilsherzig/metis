@@ -21,6 +21,12 @@
 	}
 
 	function startTimer() {
+		// run once to instant update ui on load
+		const currentDuration = Math.floor(
+			(new Date().getTime() - task.lastTrackingStart!.getTime()) / 1000
+		);
+		formattedTimeSpent = formatDuration(currentDuration);
+
 		timer = setInterval(() => {
 			const currentDuration = Math.floor(
 				(new Date().getTime() - task.lastTrackingStart!.getTime()) / 1000
@@ -41,10 +47,26 @@
 </script>
 
 <div
-	class="group relative mb-1 rounded bg-white p-2 shadow hover:shadow-md dark:bg-neutral-700 dark:text-neutral-100"
+	class="group relative mb-1 overflow-hidden rounded p-2 shadow hover:shadow-md dark:text-neutral-100"
 	class:cursor-move={isDraggable}
 >
-	<div class="flex items-start justify-between">
+	<!-- Add progress background -->
+	<div
+		class="absolute inset-0 transition-all duration-300"
+		class:bg-green-500={!isOvertime}
+		class:bg-red-500={isOvertime}
+		style:width="{Math.min(progressPercentage, 100)}%"
+		style="opacity: 0.15"
+	></div>
+
+	<!-- Add white/dark background that sits on top of the progress bar -->
+	<div
+		class="absolute inset-0 bg-white dark:bg-neutral-700"
+		style="z-index: 0; opacity: 0.15"
+	></div>
+
+	<!-- Main content - make sure it's above the backgrounds -->
+	<div class="relative flex items-start justify-between" style="z-index: 1">
 		<div class="flex flex-col gap-1">
 			<h3 class="font-medium">{task.title}</h3>
 			{#if task.description}
@@ -54,14 +76,6 @@
 				<div class="flex items-center gap-2">
 					<div class="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-300">
 						<span>{task.timeSpent || 0}/{task.goalTime}m</span>
-						<div class="h-1 w-8 overflow-hidden rounded-full bg-gray-200 dark:bg-neutral-600">
-							<div
-								class="h-full transition-all duration-300"
-								class:bg-green-500={!isOvertime}
-								class:bg-red-500={isOvertime}
-								style:width="{Math.min(progressPercentage, 100)}%"
-							/>
-						</div>
 					</div>
 					{#if task.isTracking}
 						<button
