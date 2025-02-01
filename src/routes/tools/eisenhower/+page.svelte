@@ -247,9 +247,9 @@
 	}
 </script>
 
-<div class="flex flex-col gap-4 p-4 md:flex-row">
+<div class="flex flex-col gap-4 p-4 md:flex-row dark:bg-neutral-900">
 	<!-- Sidebar -->
-	<div class="w-full rounded-lg bg-gray-100 p-4 md:w-64">
+	<div class="w-full rounded-lg bg-gray-100 p-4 md:w-64 dark:bg-neutral-800 dark:text-neutral-100">
 		<h2 class="mb-4 text-lg font-bold">Tasks</h2>
 
 		<!-- Add new task form -->
@@ -258,12 +258,12 @@
 				type="text"
 				bind:value={newTaskText}
 				placeholder="New task..."
-				class="mb-2 w-full rounded border p-2"
+				class="mb-2 w-full rounded border p-2 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-100"
 				on:keydown={(e) => e.key === 'Enter' && addTask()}
 			/>
 			<button
 				on:click={addTask}
-				class="w-full rounded bg-gray-200 p-2 text-blue-500 transition-all hover:bg-blue-600 hover:text-white"
+				class="w-full rounded bg-gray-200 p-2 text-blue-500 transition-all hover:bg-blue-600 hover:text-white dark:bg-neutral-700 dark:hover:bg-blue-600"
 			>
 				Add Task
 			</button>
@@ -285,7 +285,7 @@
 			{#each unassignedTasks as item (item.id)}
 				<div
 					animate:flip={{ duration: flipDurationMs }}
-					class="group relative mb-2 cursor-move rounded bg-gray-50 p-2 shadow"
+					class="group relative mb-2 cursor-move rounded bg-gray-50 p-2 shadow dark:bg-neutral-700 dark:text-neutral-100"
 				>
 					{item.text}
 					<DeleteItemButton removeTask={() => removeTask(item.id, item.quadrant)} />
@@ -297,8 +297,8 @@
 	<!-- Matrix -->
 	<div class="w-full md:flex-1">
 		<div class="grid w-full grid-cols-1 gap-4 md:grid-cols-2 md:grid-rows-2">
-			<div class="rounded-lg bg-red-100 p-4">
-				<h2 class="mb-2 font-bold">Urgent & Important</h2>
+			<div class="rounded-lg bg-red-100 p-4 dark:bg-neutral-800">
+				<h2 class="mb-2 font-bold dark:text-red-400">Urgent & Important</h2>
 				<div
 					use:dndzone={{
 						items: urgentImportant,
@@ -313,7 +313,7 @@
 					{#each urgentImportant as item (item.id)}
 						<div
 							animate:flip={{ duration: flipDurationMs }}
-							class="group relative mb-2 cursor-move rounded bg-white p-2 shadow"
+							class="group relative mb-2 cursor-move rounded bg-white p-2 shadow dark:bg-neutral-700 dark:text-neutral-100"
 						>
 							{item.text}
 							<DeleteItemButton removeTask={() => removeTask(item.id, item.quadrant)} />
@@ -322,8 +322,8 @@
 				</div>
 			</div>
 
-			<div class="rounded-lg bg-orange-100 p-4">
-				<h2 class="mb-2 font-bold">Not Urgent & Important</h2>
+			<div class="rounded-lg bg-orange-100 p-4 dark:bg-neutral-800">
+				<h2 class="mb-2 font-bold dark:text-orange-400">Not Urgent & Important</h2>
 				<div
 					use:dndzone={{
 						items: notUrgentImportant,
@@ -344,7 +344,7 @@
 					{#each notUrgentImportant as item (item.id)}
 						<div
 							animate:flip={{ duration: flipDurationMs }}
-							class="group relative mb-2 cursor-move rounded bg-white p-2 shadow"
+							class="group relative mb-2 cursor-move rounded bg-white p-2 shadow dark:bg-neutral-700 dark:text-neutral-100"
 						>
 							{item.text}
 							<DeleteItemButton removeTask={() => removeTask(item.id, item.quadrant)} />
@@ -353,8 +353,8 @@
 				</div>
 			</div>
 
-			<div class="rounded-lg bg-blue-100 p-4">
-				<h2 class="mb-2 font-bold">Urgent & Not Important</h2>
+			<div class="rounded-lg bg-blue-100 p-4 dark:bg-neutral-800">
+				<h2 class="mb-2 font-bold dark:text-blue-400">Urgent & Not Important</h2>
 				<div
 					use:dndzone={{
 						items: urgentNotImportant,
@@ -369,7 +369,7 @@
 					{#each urgentNotImportant as item (item.id)}
 						<div
 							animate:flip={{ duration: flipDurationMs }}
-							class="group relative mb-2 cursor-move rounded bg-white p-2 shadow"
+							class="group relative mb-2 cursor-move rounded bg-white p-2 shadow dark:bg-neutral-700 dark:text-neutral-100"
 						>
 							{item.text}
 							<DeleteItemButton removeTask={() => removeTask(item.id, item.quadrant)} />
@@ -378,8 +378,8 @@
 				</div>
 			</div>
 
-			<div class="rounded-lg bg-gray-100 p-4">
-				<h2 class="mb-2 font-bold">Not Urgent & Not Important</h2>
+			<div class="rounded-lg bg-gray-100 p-4 dark:bg-neutral-800">
+				<h2 class="mb-2 font-bold dark:text-gray-400">Not Urgent & Not Important</h2>
 				<div
 					use:dndzone={{
 						items: notUrgentNotImportant,
@@ -394,7 +394,7 @@
 					{#each notUrgentNotImportant as item (item.id)}
 						<div
 							animate:flip={{ duration: flipDurationMs }}
-							class="group relative mb-2 cursor-move rounded bg-white p-2 shadow"
+							class="group relative mb-2 cursor-move rounded bg-white p-2 shadow dark:bg-neutral-700 dark:text-neutral-100"
 						>
 							{item.text}
 							<DeleteItemButton removeTask={() => removeTask(item.id, item.quadrant)} />
@@ -406,7 +406,7 @@
 	</div>
 	{#if showUndo && lastDeletedTask}
 		<div
-			class="fixed bottom-4 left-4 flex items-center gap-2 rounded bg-neutral-200 px-4 py-2 shadow transition-all"
+			class="fixed bottom-4 left-4 flex items-center gap-2 rounded bg-neutral-200 px-4 py-2 shadow transition-all dark:bg-neutral-700 dark:text-neutral-100"
 			in:fade
 			out:fade
 		>
