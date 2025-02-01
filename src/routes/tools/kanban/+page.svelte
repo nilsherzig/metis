@@ -2,10 +2,11 @@
 	import { dndzone } from 'svelte-dnd-action';
 	import { flip } from 'svelte/animate';
 	import { fade } from 'svelte/transition';
-	import DeleteItemButton from '$lib/components/deleteItemButton.svelte';
 	import { createDefaultTask, taskStore } from '$lib/stores/taskStore';
 	import type { Task } from '$lib/types';
 	import { COLUMNS } from '$lib/types';
+
+	import TaskCard from '$lib/components/TaskCard.svelte';
 
 	let newTaskText = '';
 	const flipDurationMs = 150;
@@ -122,12 +123,8 @@
 				class="min-h-[200px]"
 			>
 				{#each todoTasks as task (task.id)}
-					<div
-						animate:flip={{ duration: flipDurationMs }}
-						class="group relative mb-2 cursor-move rounded bg-white p-2 shadow dark:bg-neutral-700 dark:text-neutral-100"
-					>
-						{task.title}
-						<DeleteItemButton removeTask={() => removeTask(task.id)} />
+					<div animate:flip={{ duration: flipDurationMs }}>
+						<TaskCard {task} {removeTask} />
 					</div>
 				{/each}
 			</div>
@@ -148,12 +145,8 @@
 				class="min-h-[200px]"
 			>
 				{#each inProgressTasks as task (task.id)}
-					<div
-						animate:flip={{ duration: flipDurationMs }}
-						class="group relative mb-2 cursor-move rounded bg-white p-2 shadow dark:bg-neutral-700 dark:text-neutral-100"
-					>
-						{task.title}
-						<DeleteItemButton removeTask={() => removeTask(task.id)} />
+					<div animate:flip={{ duration: flipDurationMs }}>
+						<TaskCard {task} {removeTask} />
 					</div>
 				{/each}
 			</div>
@@ -174,12 +167,8 @@
 				class="min-h-[200px]"
 			>
 				{#each doneTasks as task (task.id)}
-					<div
-						animate:flip={{ duration: flipDurationMs }}
-						class="group relative mb-2 cursor-move rounded bg-white p-2 shadow dark:bg-neutral-700 dark:text-neutral-100"
-					>
-						{task.title}
-						<DeleteItemButton removeTask={() => removeTask(task.id)} />
+					<div animate:flip={{ duration: flipDurationMs }}>
+						<TaskCard {task} {removeTask} />
 					</div>
 				{/each}
 			</div>

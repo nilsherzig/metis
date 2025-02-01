@@ -2,11 +2,22 @@
 	import { dndzone } from 'svelte-dnd-action';
 	import { flip } from 'svelte/animate';
 	import type { DndEvent } from 'svelte-dnd-action';
-	import DeleteItemButton from '$lib/components/deleteItemButton.svelte';
 	import { fade } from 'svelte/transition';
 	import { createDefaultTask, taskStore } from '$lib/stores/taskStore';
 	import { QuadrantTypes } from '$lib/types';
 	import type { QuadrantType, Task } from '$lib/types';
+
+	import CreateTaskModal from '$lib/components/CreateTaskModal.svelte';
+	import CreateTaskButton from '$lib/components/CreateTaskButton.svelte';
+
+	let showCreateModal = false;
+
+	function handleCreateTask(event: CustomEvent) {
+		const task = event.detail;
+		taskStore.addTask(task);
+	}
+
+	import TaskCard from '$lib/components/TaskCard.svelte';
 
 	let lastDeletedTask: Task | null = null;
 	let showUndo = false;
@@ -136,13 +147,9 @@
 			on:finalize={(e) => handleDndFinalize(e, 'unassigned')}
 			class="min-h-[100px]"
 		>
-			{#each unassignedTasks as item (item.id)}
-				<div
-					animate:flip={{ duration: flipDurationMs }}
-					class="group relative mb-2 cursor-move rounded bg-gray-50 p-2 shadow dark:bg-neutral-700 dark:text-neutral-100"
-				>
-					{item.title}
-					<DeleteItemButton removeTask={() => removeTask(item.id)} />
+			{#each unassignedTasks as task (task.id)}
+				<div animate:flip={{ duration: flipDurationMs }}>
+					<TaskCard {task} {removeTask} />
 				</div>
 			{/each}
 		</div>
@@ -164,13 +171,9 @@
 					on:finalize={(e) => handleDndFinalize(e, 'urgent-important')}
 					class="min-h-[200px]"
 				>
-					{#each urgentImportant as item (item.id)}
-						<div
-							animate:flip={{ duration: flipDurationMs }}
-							class="group relative mb-2 cursor-move rounded bg-white p-2 shadow dark:bg-neutral-700 dark:text-neutral-100"
-						>
-							{item.title}
-							<DeleteItemButton removeTask={() => removeTask(item.id)} />
+					{#each urgentImportant as task (task.id)}
+						<div animate:flip={{ duration: flipDurationMs }}>
+							<TaskCard {task} {removeTask} />
 						</div>
 					{/each}
 				</div>
@@ -195,13 +198,9 @@
 					on:finalize={(e) => handleDndFinalize(e, 'not-urgent-important')}
 					class="min-h-[200px]"
 				>
-					{#each notUrgentImportant as item (item.id)}
-						<div
-							animate:flip={{ duration: flipDurationMs }}
-							class="group relative mb-2 cursor-move rounded bg-white p-2 shadow dark:bg-neutral-700 dark:text-neutral-100"
-						>
-							{item.title}
-							<DeleteItemButton removeTask={() => removeTask(item.id)} />
+					{#each notUrgentImportant as task (task.id)}
+						<div animate:flip={{ duration: flipDurationMs }}>
+							<TaskCard {task} {removeTask} />
 						</div>
 					{/each}
 				</div>
@@ -220,13 +219,9 @@
 					on:finalize={(e) => handleDndFinalize(e, 'urgent-not-important')}
 					class="min-h-[200px]"
 				>
-					{#each urgentNotImportant as item (item.id)}
-						<div
-							animate:flip={{ duration: flipDurationMs }}
-							class="group relative mb-2 cursor-move rounded bg-white p-2 shadow dark:bg-neutral-700 dark:text-neutral-100"
-						>
-							{item.title}
-							<DeleteItemButton removeTask={() => removeTask(item.id)} />
+					{#each urgentNotImportant as task (task.id)}
+						<div animate:flip={{ duration: flipDurationMs }}>
+							<TaskCard {task} {removeTask} />
 						</div>
 					{/each}
 				</div>
@@ -245,13 +240,9 @@
 					on:finalize={(e) => handleDndFinalize(e, 'not-urgent-not-important')}
 					class="min-h-[200px]"
 				>
-					{#each notUrgentNotImportant as item (item.id)}
-						<div
-							animate:flip={{ duration: flipDurationMs }}
-							class="group relative mb-2 cursor-move rounded bg-white p-2 shadow dark:bg-neutral-700 dark:text-neutral-100"
-						>
-							{item.title}
-							<DeleteItemButton removeTask={() => removeTask(item.id)} />
+					{#each notUrgentNotImportant as task (task.id)}
+						<div animate:flip={{ duration: flipDurationMs }}>
+							<TaskCard {task} {removeTask} />
 						</div>
 					{/each}
 				</div>
@@ -291,4 +282,15 @@
 			</button>
 		</div>
 	{/if}
+	<div>
+		<CreateTaskButton onClick={() => (showCreateModal = true)} />
+
+		<CreateTaskModal
+			show={showCreateModal}
+			on:close={() => (showCreateModal = false)}
+			on:save={handleCreateTask}
+			initialQuadrant="urgent-important"
+			initialStatus="todo"
+		/>
+	</div>
 </div>

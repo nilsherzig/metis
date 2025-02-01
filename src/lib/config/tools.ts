@@ -13,5 +13,10 @@ export const tools = [
 		name: 'Kanban Board',
 		link: 'kanban',
 		description: 'Organize tasks in a kanban board'
+	},
+	{
+		name: 'Time Tracking',
+		link: 'time-tracking',
+		description: 'Track time spent on tasks and view reports'
 	}
 ];

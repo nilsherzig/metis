@@ -9,6 +9,19 @@ export interface Task {
 	completed?: boolean;
 	quadrant?: QuadrantType;
 	status?: (typeof COLUMNS)[keyof typeof COLUMNS];
+	goalTime?: number;
+	timeSpent?: number;
+	timeEntries?: TimeEntry[];
+	isTracking?: boolean;
+	lastTrackingStart?: Date;
+}
+
+export interface TimeEntry {
+	id: string;
+	startTime: Date;
+	endTime: Date;
+	duration: number;
+	note?: string;
 }
 
 export type QuadrantType =
