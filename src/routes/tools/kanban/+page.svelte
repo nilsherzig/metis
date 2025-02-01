@@ -87,7 +87,7 @@
 	}
 </script>
 
-<div class="flex flex-col gap-4 p-4 md:flex-row dark:bg-neutral-900">
+<div class="flex flex-col gap-4 p-4 dark:bg-neutral-900 md:flex-row">
 	<!-- Add new task input -->
 	<div class="mb-4 w-full">
 		<input
@@ -115,7 +115,7 @@
 					items: todoTasks,
 					flipDurationMs,
 					dropTargetStyle: {},
-					dropTargetClasses: ['rounded', 'outline-gray-300', 'outline-dotted']
+					dropTargetClasses: ['rounded', 'outline-gray-300', 'outline-dashed']
 				}}
 				on:consider={(e) => handleDndConsider(e, COLUMNS.TODO)}
 				on:finalize={(e) => handleDndFinalize(e, COLUMNS.TODO)}
@@ -141,7 +141,7 @@
 					items: inProgressTasks,
 					flipDurationMs,
 					dropTargetStyle: {},
-					dropTargetClasses: ['rounded', 'outline-blue-300', 'outline-dotted']
+					dropTargetClasses: ['rounded', 'outline-blue-300', 'outline-dashed']
 				}}
 				on:consider={(e) => handleDndConsider(e, COLUMNS.IN_PROGRESS)}
 				on:finalize={(e) => handleDndFinalize(e, COLUMNS.IN_PROGRESS)}
@@ -167,7 +167,7 @@
 					items: doneTasks,
 					flipDurationMs,
 					dropTargetStyle: {},
-					dropTargetClasses: ['rounded', 'outline-green-300', 'outline-dotted']
+					dropTargetClasses: ['rounded', 'outline-green-300', 'outline-dashed']
 				}}
 				on:consider={(e) => handleDndConsider(e, COLUMNS.DONE)}
 				on:finalize={(e) => handleDndFinalize(e, COLUMNS.DONE)}

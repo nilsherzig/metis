@@ -101,9 +101,9 @@
 	}
 </script>
 
-<div class="flex flex-col gap-4 p-4 md:flex-row dark:bg-neutral-900">
+<div class="flex flex-col gap-4 p-4 dark:bg-neutral-900 md:flex-row">
 	<!-- Sidebar -->
-	<div class="w-full rounded-lg bg-gray-100 p-4 md:w-64 dark:bg-neutral-800 dark:text-neutral-100">
+	<div class="w-full rounded-lg bg-gray-100 p-4 dark:bg-neutral-800 dark:text-neutral-100 md:w-64">
 		<h2 class="mb-4 text-lg font-bold">Tasks</h2>
 
 		<!-- Add new task form -->
@@ -130,7 +130,7 @@
 				items: unassignedTasks,
 				flipDurationMs,
 				dropTargetStyle: {},
-				dropTargetClasses: ['rounded', 'outline-gray-300', 'outline-dotted', 'outline-offset-4']
+				dropTargetClasses: ['rounded', 'outline-gray-300', 'outline-dashed', 'outline-offset-4']
 			}}
 			on:consider={(e) => handleDndConsider(e, 'unassigned')}
 			on:finalize={(e) => handleDndFinalize(e, 'unassigned')}
@@ -158,7 +158,7 @@
 						items: urgentImportant,
 						flipDurationMs,
 						dropTargetStyle: {},
-						dropTargetClasses: ['rounded', 'outline-red-300', 'outline-dotted', 'outline-offset-4']
+						dropTargetClasses: ['rounded', 'outline-red-300', 'outline-dashed', 'outline-offset-4']
 					}}
 					on:consider={(e) => handleDndConsider(e, 'urgent-important')}
 					on:finalize={(e) => handleDndFinalize(e, 'urgent-important')}
@@ -187,7 +187,7 @@
 						dropTargetClasses: [
 							'rounded',
 							'outline-orange-300',
-							'outline-dotted',
+							'outline-dashed',
 							'outline-offset-4'
 						]
 					}}
@@ -214,7 +214,7 @@
 						items: urgentNotImportant,
 						flipDurationMs,
 						dropTargetStyle: {},
-						dropTargetClasses: ['rounded', 'outline-blue-300', 'outline-dotted', 'outline-offset-4']
+						dropTargetClasses: ['rounded', 'outline-blue-300', 'outline-dashed', 'outline-offset-4']
 					}}
 					on:consider={(e) => handleDndConsider(e, 'urgent-not-important')}
 					on:finalize={(e) => handleDndFinalize(e, 'urgent-not-important')}
@@ -239,7 +239,7 @@
 						items: notUrgentNotImportant,
 						flipDurationMs,
 						dropTargetStyle: {},
-						dropTargetClasses: ['rounded', 'outline-gray-300', 'outline-dotted', 'outline-offset-4']
+						dropTargetClasses: ['rounded', 'outline-gray-300', 'outline-dashed', 'outline-offset-4']
 					}}
 					on:consider={(e) => handleDndConsider(e, 'not-urgent-not-important')}
 					on:finalize={(e) => handleDndFinalize(e, 'not-urgent-not-important')}
