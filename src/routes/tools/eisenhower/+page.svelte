@@ -18,6 +18,14 @@
 		| 'not-urgent-not-important'
 		| 'unassigned';
 
+	const QuadrantTypes = {
+		URGENT_IMPORTANT: 'urgent-important' as QuadrantType,
+		NOT_URGENT_IMPORTANT: 'not-urgent-important' as QuadrantType,
+		URGENT_NOT_IMPORTANT: 'urgent-not-important' as QuadrantType,
+		NOT_URGENT_NOT_IMPORTANT: 'not-urgent-not-important' as QuadrantType,
+		UNASSIGNED: 'unassigned' as QuadrantType
+	};
+
 	const flipDurationMs = 150;
 	let mounted = false;
 
@@ -25,23 +33,23 @@
 	let newTaskText = '';
 
 	const defaultTasks = {
-		unassignedTasks: [{ id: 9, text: 'New task', quadrant: 'unassigned' }],
+		unassignedTasks: [{ id: 9, text: 'New task', quadrant: QuadrantTypes.UNASSIGNED }] as Task[],
 		urgentImportant: [
-			{ id: 1, text: 'Critical deadline', quadrant: 'urgent-important' },
-			{ id: 2, text: 'Emergency meeting', quadrant: 'urgent-important' }
-		],
+			{ id: 1, text: 'Critical deadline', quadrant: QuadrantTypes.URGENT_IMPORTANT },
+			{ id: 2, text: 'Emergency meeting', quadrant: QuadrantTypes.URGENT_IMPORTANT }
+		] as Task[],
 		notUrgentImportant: [
-			{ id: 3, text: 'Exercise', quadrant: 'not-urgent-important' },
-			{ id: 4, text: 'Career planning', quadrant: 'not-urgent-important' }
-		],
+			{ id: 3, text: 'Exercise', quadrant: QuadrantTypes.NOT_URGENT_IMPORTANT },
+			{ id: 4, text: 'Career planning', quadrant: QuadrantTypes.NOT_URGENT_IMPORTANT }
+		] as Task[],
 		urgentNotImportant: [
-			{ id: 5, text: 'Answer emails', quadrant: 'urgent-not-important' },
-			{ id: 6, text: 'Phone calls', quadrant: 'urgent-not-important' }
-		],
+			{ id: 5, text: 'Answer emails', quadrant: QuadrantTypes.URGENT_NOT_IMPORTANT },
+			{ id: 6, text: 'Phone calls', quadrant: QuadrantTypes.URGENT_NOT_IMPORTANT }
+		] as Task[],
 		notUrgentNotImportant: [
-			{ id: 7, text: 'Social media', quadrant: 'not-urgent-not-important' },
-			{ id: 8, text: 'YouTube videos', quadrant: 'not-urgent-not-important' }
-		]
+			{ id: 7, text: 'Social media', quadrant: QuadrantTypes.NOT_URGENT_NOT_IMPORTANT },
+			{ id: 8, text: 'YouTube videos', quadrant: QuadrantTypes.NOT_URGENT_NOT_IMPORTANT }
+		] as Task[]
 	};
 
 	let unassignedTasks: Task[] = [];
@@ -110,7 +118,7 @@
 				{
 					id: nextId++,
 					text: newTaskText,
-					quadrant: 'unassigned'
+					quadrant: QuadrantTypes.UNASSIGNED
 				}
 			];
 			newTaskText = '';
@@ -120,19 +128,19 @@
 
 	function removeTask(taskId: number, quadrant: QuadrantType) {
 		switch (quadrant) {
-			case 'unassigned':
+			case QuadrantTypes.UNASSIGNED:
 				unassignedTasks = unassignedTasks.filter((task) => task.id !== taskId);
 				break;
-			case 'urgent-important':
+			case QuadrantTypes.URGENT_IMPORTANT:
 				urgentImportant = urgentImportant.filter((task) => task.id !== taskId);
 				break;
-			case 'not-urgent-important':
+			case QuadrantTypes.NOT_URGENT_IMPORTANT:
 				notUrgentImportant = notUrgentImportant.filter((task) => task.id !== taskId);
 				break;
-			case 'urgent-not-important':
+			case QuadrantTypes.URGENT_NOT_IMPORTANT:
 				urgentNotImportant = urgentNotImportant.filter((task) => task.id !== taskId);
 				break;
-			case 'not-urgent-not-important':
+			case QuadrantTypes.NOT_URGENT_NOT_IMPORTANT:
 				notUrgentNotImportant = notUrgentNotImportant.filter((task) => task.id !== taskId);
 				break;
 		}
@@ -142,19 +150,19 @@
 	function handleDndConsider(e: CustomEvent<DndEvent<Task>>, quadrant: QuadrantType) {
 		const { items } = e.detail;
 		switch (quadrant) {
-			case 'unassigned':
+			case QuadrantTypes.UNASSIGNED:
 				unassignedTasks = items;
 				break;
-			case 'urgent-important':
+			case QuadrantTypes.URGENT_IMPORTANT:
 				urgentImportant = items;
 				break;
-			case 'not-urgent-important':
+			case QuadrantTypes.NOT_URGENT_IMPORTANT:
 				notUrgentImportant = items;
 				break;
-			case 'urgent-not-important':
+			case QuadrantTypes.URGENT_NOT_IMPORTANT:
 				urgentNotImportant = items;
 				break;
-			case 'not-urgent-not-important':
+			case QuadrantTypes.NOT_URGENT_NOT_IMPORTANT:
 				notUrgentNotImportant = items;
 				break;
 		}
@@ -164,19 +172,19 @@
 		const { items } = e.detail;
 		items.forEach((item) => (item.quadrant = quadrant));
 		switch (quadrant) {
-			case 'unassigned':
+			case QuadrantTypes.UNASSIGNED:
 				unassignedTasks = items;
 				break;
-			case 'urgent-important':
+			case QuadrantTypes.URGENT_IMPORTANT:
 				urgentImportant = items;
 				break;
-			case 'not-urgent-important':
+			case QuadrantTypes.NOT_URGENT_IMPORTANT:
 				notUrgentImportant = items;
 				break;
-			case 'urgent-not-important':
+			case QuadrantTypes.URGENT_NOT_IMPORTANT:
 				urgentNotImportant = items;
 				break;
-			case 'not-urgent-not-important':
+			case QuadrantTypes.NOT_URGENT_NOT_IMPORTANT:
 				notUrgentNotImportant = items;
 				break;
 		}
