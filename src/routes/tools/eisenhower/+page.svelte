@@ -125,7 +125,7 @@
 <div class="flex gap-4 p-4">
 	<!-- Sidebar -->
 	<div class="w-64 rounded-lg bg-gray-100 p-4 shadow">
-		<h2 class="mb-4 text-lg font-bold">Task Management</h2>
+		<h2 class="mb-4 text-lg font-bold">Tasks</h2>
 
 		<!-- Add new task form -->
 		<div class="mb-4">
@@ -147,7 +147,12 @@
 		<!-- Unassigned tasks -->
 		<h3 class="mb-2 font-bold">Unassigned Tasks</h3>
 		<div
-			use:dndzone={{ items: unassignedTasks, flipDurationMs }}
+			use:dndzone={{
+				items: unassignedTasks,
+				flipDurationMs,
+				dropTargetStyle: {},
+				dropTargetClasses: ['rounded', 'outline-gray-300', 'outline-dotted', 'outline-offset-4']
+			}}
 			on:consider={(e) => handleDndConsider(e, 'unassigned')}
 			on:finalize={(e) => handleDndFinalize(e, 'unassigned')}
 			class="min-h-[100px]"
@@ -166,13 +171,16 @@
 
 	<!-- Matrix -->
 	<div class="flex-1">
-		<h1 class="mb-4 text-lg">Eisenhower Matrix</h1>
-
 		<div class="grid w-full grid-cols-2 grid-rows-2 gap-4">
 			<div class="rounded-lg bg-red-100 p-4">
 				<h2 class="mb-2 font-bold">Urgent & Important</h2>
 				<div
-					use:dndzone={{ items: urgentImportant, flipDurationMs }}
+					use:dndzone={{
+						items: urgentImportant,
+						flipDurationMs,
+						dropTargetStyle: {},
+						dropTargetClasses: ['rounded', 'outline-red-300', 'outline-dotted', 'outline-offset-4']
+					}}
 					on:consider={(e) => handleDndConsider(e, 'urgent-important')}
 					on:finalize={(e) => handleDndFinalize(e, 'urgent-important')}
 					class="min-h-[200px]"
@@ -192,7 +200,18 @@
 			<div class="rounded-lg bg-orange-100 p-4">
 				<h2 class="mb-2 font-bold">Not Urgent & Important</h2>
 				<div
-					use:dndzone={{ items: notUrgentImportant, flipDurationMs }}
+					use:dndzone={{
+						items: notUrgentImportant,
+						flipDurationMs,
+
+						dropTargetStyle: {},
+						dropTargetClasses: [
+							'rounded',
+							'outline-orange-300',
+							'outline-dotted',
+							'outline-offset-4'
+						]
+					}}
 					on:consider={(e) => handleDndConsider(e, 'not-urgent-important')}
 					on:finalize={(e) => handleDndFinalize(e, 'not-urgent-important')}
 					class="min-h-[200px]"
@@ -212,7 +231,12 @@
 			<div class="rounded-lg bg-blue-100 p-4">
 				<h2 class="mb-2 font-bold">Urgent & Not Important</h2>
 				<div
-					use:dndzone={{ items: urgentNotImportant, flipDurationMs }}
+					use:dndzone={{
+						items: urgentNotImportant,
+						flipDurationMs,
+						dropTargetStyle: {},
+						dropTargetClasses: ['rounded', 'outline-blue-300', 'outline-dotted', 'outline-offset-4']
+					}}
 					on:consider={(e) => handleDndConsider(e, 'urgent-not-important')}
 					on:finalize={(e) => handleDndFinalize(e, 'urgent-not-important')}
 					class="min-h-[200px]"
@@ -232,7 +256,12 @@
 			<div class="rounded-lg bg-gray-100 p-4">
 				<h2 class="mb-2 font-bold">Not Urgent & Not Important</h2>
 				<div
-					use:dndzone={{ items: notUrgentNotImportant, flipDurationMs }}
+					use:dndzone={{
+						items: notUrgentNotImportant,
+						flipDurationMs,
+						dropTargetStyle: {},
+						dropTargetClasses: ['rounded', 'outline-gray-300', 'outline-dotted', 'outline-offset-4']
+					}}
 					on:consider={(e) => handleDndConsider(e, 'not-urgent-not-important')}
 					on:finalize={(e) => handleDndFinalize(e, 'not-urgent-not-important')}
 					class="min-h-[200px]"
