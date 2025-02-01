@@ -1,2 +1,15 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
+<script lang="ts">
+	let tools = [{ name: 'Eisenhower-Matrix', link: 'eisenhower' }];
+</script>
+
+<div class="p-4">
+	<h1 class="text-xl">Welcome to Metis</h1>
+	<div>
+		<h3 class="text-lg">Available Tools</h3>
+		<ul>
+			{#each tools as tool}
+				<li><a class="text-blue-500 hover:underline" href="/tools/{tool.link}">{tool.name}</a></li>
+			{/each}
+		</ul>
+	</div>
+</div>
