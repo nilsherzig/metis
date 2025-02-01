@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { dndzone } from 'svelte-dnd-action';
 	import { flip } from 'svelte/animate';
 	import type { DndEvent } from 'svelte-dnd-action';
@@ -17,32 +18,90 @@
 		| 'not-urgent-not-important'
 		| 'unassigned';
 
-	const flipDurationMs = 200;
+	const flipDurationMs = 150;
+	let mounted = false;
 
-	let nextId = 9; // Start after the initial items
+	let nextId = 9;
 	let newTaskText = '';
 
-	let unassignedTasks: Task[] = [{ id: 9, text: 'New task', quadrant: 'unassigned' }];
+	const defaultTasks = {
+		unassignedTasks: [{ id: 9, text: 'New task', quadrant: 'unassigned' }],
+		urgentImportant: [
+			{ id: 1, text: 'Critical deadline', quadrant: 'urgent-important' },
+			{ id: 2, text: 'Emergency meeting', quadrant: 'urgent-important' }
+		],
+		notUrgentImportant: [
+			{ id: 3, text: 'Exercise', quadrant: 'not-urgent-important' },
+			{ id: 4, text: 'Career planning', quadrant: 'not-urgent-important' }
+		],
+		urgentNotImportant: [
+			{ id: 5, text: 'Answer emails', quadrant: 'urgent-not-important' },
+			{ id: 6, text: 'Phone calls', quadrant: 'urgent-not-important' }
+		],
+		notUrgentNotImportant: [
+			{ id: 7, text: 'Social media', quadrant: 'not-urgent-not-important' },
+			{ id: 8, text: 'YouTube videos', quadrant: 'not-urgent-not-important' }
+		]
+	};
 
-	let urgentImportant: Task[] = [
-		{ id: 1, text: 'Critical deadline', quadrant: 'urgent-important' },
-		{ id: 2, text: 'Emergency meeting', quadrant: 'urgent-important' }
-	];
+	let unassignedTasks: Task[] = [];
+	let urgentImportant: Task[] = [];
+	let notUrgentImportant: Task[] = [];
+	let urgentNotImportant: Task[] = [];
+	let notUrgentNotImportant: Task[] = [];
 
-	let notUrgentImportant: Task[] = [
-		{ id: 3, text: 'Exercise', quadrant: 'not-urgent-important' },
-		{ id: 4, text: 'Career planning', quadrant: 'not-urgent-important' }
-	];
+	function loadTasks() {
+		const savedTasks = localStorage.getItem('eisenhowerTasks');
+		console.log('loaded tasks', savedTasks);
+		if (savedTasks) {
+			const parsed = JSON.parse(savedTasks);
+			unassignedTasks = parsed.unassignedTasks;
+			urgentImportant = parsed.urgentImportant;
+			notUrgentImportant = parsed.notUrgentImportant;
+			urgentNotImportant = parsed.urgentNotImportant;
+			notUrgentNotImportant = parsed.notUrgentNotImportant;
 
-	let urgentNotImportant: Task[] = [
-		{ id: 5, text: 'Answer emails', quadrant: 'urgent-not-important' },
-		{ id: 6, text: 'Phone calls', quadrant: 'urgent-not-important' }
-	];
+			const allTasks = [
+				...unassignedTasks,
+				...urgentImportant,
+				...notUrgentImportant,
+				...urgentNotImportant,
+				...notUrgentNotImportant
+			];
+			nextId = Math.max(...allTasks.map((task) => task.id)) + 1;
+		} else {
+			unassignedTasks = defaultTasks.unassignedTasks;
+			urgentImportant = defaultTasks.urgentImportant;
+			notUrgentImportant = defaultTasks.notUrgentImportant;
+			urgentNotImportant = defaultTasks.urgentNotImportant;
+			notUrgentNotImportant = defaultTasks.notUrgentNotImportant;
+		}
+	}
 
-	let notUrgentNotImportant: Task[] = [
-		{ id: 7, text: 'Social media', quadrant: 'not-urgent-not-important' },
-		{ id: 8, text: 'YouTube videos', quadrant: 'not-urgent-not-important' }
-	];
+	function saveTasks() {
+		if (!mounted) return;
+		console.log('saving tasks');
+
+		const tasksToSave = {
+			unassignedTasks,
+			urgentImportant,
+			notUrgentImportant,
+			urgentNotImportant,
+			notUrgentNotImportant
+		};
+		localStorage.setItem('eisenhowerTasks', JSON.stringify(tasksToSave));
+	}
+
+	$: {
+		if (mounted) {
+			saveTasks();
+		}
+	}
+
+	onMount(() => {
+		loadTasks();
+		mounted = true;
+	});
 
 	function addTask() {
 		if (newTaskText.trim()) {
@@ -56,6 +115,7 @@
 			];
 			newTaskText = '';
 		}
+		saveTasks();
 	}
 
 	function removeTask(taskId: number, quadrant: QuadrantType) {
@@ -76,6 +136,7 @@
 				notUrgentNotImportant = notUrgentNotImportant.filter((task) => task.id !== taskId);
 				break;
 		}
+		saveTasks();
 	}
 
 	function handleDndConsider(e: CustomEvent<DndEvent<Task>>, quadrant: QuadrantType) {
@@ -119,12 +180,13 @@
 				notUrgentNotImportant = items;
 				break;
 		}
+		saveTasks();
 	}
 </script>
 
 <div class="flex gap-4 p-4">
 	<!-- Sidebar -->
-	<div class="w-64 rounded-lg bg-gray-100 p-4 shadow">
+	<div class="w-64 rounded-lg bg-gray-100 p-4">
 		<h2 class="mb-4 text-lg font-bold">Tasks</h2>
 
 		<!-- Add new task form -->
