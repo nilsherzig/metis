@@ -4,6 +4,11 @@
 	import { flip } from 'svelte/animate';
 	import type { DndEvent } from 'svelte-dnd-action';
 	import DeleteItemButton from '$lib/components/deleteItemButton.svelte';
+	import { fade } from 'svelte/transition';
+
+	let lastDeletedTask: Task | null = null;
+	let showUndo = false;
+	let undoTimeout: ReturnType<typeof setTimeout>;
 
 	interface Task {
 		id: number;
@@ -127,23 +132,73 @@
 	}
 
 	function removeTask(taskId: number, quadrant: QuadrantType) {
+		let removedTask: Task | undefined;
+
 		switch (quadrant) {
 			case QuadrantTypes.UNASSIGNED:
+				removedTask = unassignedTasks.find((task) => task.id === taskId);
 				unassignedTasks = unassignedTasks.filter((task) => task.id !== taskId);
 				break;
 			case QuadrantTypes.URGENT_IMPORTANT:
+				removedTask = urgentImportant.find((task) => task.id === taskId);
 				urgentImportant = urgentImportant.filter((task) => task.id !== taskId);
 				break;
 			case QuadrantTypes.NOT_URGENT_IMPORTANT:
+				removedTask = notUrgentImportant.find((task) => task.id === taskId);
 				notUrgentImportant = notUrgentImportant.filter((task) => task.id !== taskId);
 				break;
 			case QuadrantTypes.URGENT_NOT_IMPORTANT:
+				removedTask = urgentNotImportant.find((task) => task.id === taskId);
 				urgentNotImportant = urgentNotImportant.filter((task) => task.id !== taskId);
 				break;
 			case QuadrantTypes.NOT_URGENT_NOT_IMPORTANT:
+				removedTask = notUrgentNotImportant.find((task) => task.id === taskId);
 				notUrgentNotImportant = notUrgentNotImportant.filter((task) => task.id !== taskId);
 				break;
 		}
+
+		if (removedTask) {
+			lastDeletedTask = removedTask;
+			showUndo = true;
+
+			// Clear any existing timeout
+			if (undoTimeout) clearTimeout(undoTimeout);
+
+			// Hide the undo button after 5 seconds
+			undoTimeout = setTimeout(() => {
+				showUndo = false;
+				lastDeletedTask = null;
+			}, 5000);
+		}
+
+		saveTasks();
+	}
+
+	// Add undo function
+	function undoDelete() {
+		if (!lastDeletedTask) return;
+
+		switch (lastDeletedTask.quadrant) {
+			case QuadrantTypes.UNASSIGNED:
+				unassignedTasks = [...unassignedTasks, lastDeletedTask];
+				break;
+			case QuadrantTypes.URGENT_IMPORTANT:
+				urgentImportant = [...urgentImportant, lastDeletedTask];
+				break;
+			case QuadrantTypes.NOT_URGENT_IMPORTANT:
+				notUrgentImportant = [...notUrgentImportant, lastDeletedTask];
+				break;
+			case QuadrantTypes.URGENT_NOT_IMPORTANT:
+				urgentNotImportant = [...urgentNotImportant, lastDeletedTask];
+				break;
+			case QuadrantTypes.NOT_URGENT_NOT_IMPORTANT:
+				notUrgentNotImportant = [...notUrgentNotImportant, lastDeletedTask];
+				break;
+		}
+
+		showUndo = false;
+		lastDeletedTask = null;
+		if (undoTimeout) clearTimeout(undoTimeout);
 		saveTasks();
 	}
 
@@ -349,4 +404,37 @@
 			</div>
 		</div>
 	</div>
+	{#if showUndo && lastDeletedTask}
+		<div
+			class="fixed bottom-4 left-4 flex items-center gap-2 rounded bg-neutral-200 px-4 py-2 shadow transition-all"
+			in:fade
+			out:fade
+		>
+			<span>
+				<span class="font-bold">
+					{lastDeletedTask.text}
+				</span> deleted</span
+			>
+			<button
+				class="font-medium transition-all hover:text-blue-400"
+				on:click={undoDelete}
+				aria-label="Undo"
+			>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					fill="none"
+					viewBox="0 0 24 24"
+					stroke-width="1.5"
+					stroke="currentColor"
+					class="size-5"
+				>
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						d="M21 16.811c0 .864-.933 1.406-1.683.977l-7.108-4.061a1.125 1.125 0 0 1 0-1.954l7.108-4.061A1.125 1.125 0 0 1 21 8.689v8.122ZM11.25 16.811c0 .864-.933 1.406-1.683.977l-7.108-4.061a1.125 1.125 0 0 1 0-1.954l7.108-4.061a1.125 1.125 0 0 1 1.683.977v8.122Z"
+					/>
+				</svg>
+			</button>
+		</div>
+	{/if}
 </div>

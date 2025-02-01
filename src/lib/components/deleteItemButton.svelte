@@ -4,7 +4,7 @@
 
 <button
 	on:click={() => removeTask()}
-	class="absolute right-2 top-3 text-red-500 opacity-0 hover:text-red-700 group-hover:opacity-100"
+	class="absolute right-2 top-3 text-red-500 transition-all hover:text-red-700 md:opacity-0 md:group-hover:opacity-100"
 	aria-label="Delte"
 >
 	<svg
