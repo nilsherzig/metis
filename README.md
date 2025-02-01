@@ -2,6 +2,8 @@
 
 Metis is a web/mobile app providing visual tools that empower you to work through decision-making, conflict resolution, and planning on your own terms. Named after the Greek goddess Metis, the app offers frameworks and methods that help you develop your own practical solutions to complex issues.
 
+Automated live preview of the main branch can be found at https://nilsherzig.github.io/metis/.
+
 ## Project Goals
 
 The core goals of Metis are:
