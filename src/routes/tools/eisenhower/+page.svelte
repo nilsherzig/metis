@@ -192,9 +192,9 @@
 	}
 </script>
 
-<div class="flex gap-4 p-4">
+<div class="flex flex-col gap-4 p-4 md:flex-row">
 	<!-- Sidebar -->
-	<div class="w-64 rounded-lg bg-gray-100 p-4">
+	<div class="w-full rounded-lg bg-gray-100 p-4 md:w-64">
 		<h2 class="mb-4 text-lg font-bold">Tasks</h2>
 
 		<!-- Add new task form -->
@@ -240,8 +240,8 @@
 	</div>
 
 	<!-- Matrix -->
-	<div class="flex-1">
-		<div class="grid w-full grid-cols-2 grid-rows-2 gap-4">
+	<div class="w-full md:flex-1">
+		<div class="grid w-full grid-cols-1 gap-4 md:grid-cols-2 md:grid-rows-2">
 			<div class="rounded-lg bg-red-100 p-4">
 				<h2 class="mb-2 font-bold">Urgent & Important</h2>
 				<div
