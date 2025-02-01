@@ -9,30 +9,38 @@
 
 	let timer: NodeJS.Timer;
 	let formattedTimeSpent = '0:00';
+	let currentProgressPercentage = 0;
 
-	$: progressPercentage = task.goalTime ? ((task.timeSpent || 0) / task.goalTime) * 100 : 0;
-	$: isOvertime = progressPercentage > 100;
+	$: baseProgressPercentage = task.goalTime ? ((task.timeSpent || 0) / task.goalTime) * 100 : 0;
+	$: isOvertime = currentProgressPercentage > 100;
 	$: {
 		if (task.isTracking) {
 			startTimer();
 		} else {
 			stopTimer();
+			currentProgressPercentage = baseProgressPercentage;
 		}
 	}
 
 	function startTimer() {
 		// run once to instant update ui on load
+		updateProgress();
+
+		timer = setInterval(() => {
+			updateProgress();
+		}, 1000);
+	}
+
+	function updateProgress() {
 		const currentDuration = Math.floor(
 			(new Date().getTime() - task.lastTrackingStart!.getTime()) / 1000
 		);
 		formattedTimeSpent = formatDuration(currentDuration);
 
-		timer = setInterval(() => {
-			const currentDuration = Math.floor(
-				(new Date().getTime() - task.lastTrackingStart!.getTime()) / 1000
-			);
-			formattedTimeSpent = formatDuration(currentDuration);
-		}, 1000);
+		const additionalMinutes = currentDuration / 60;
+		currentProgressPercentage = task.goalTime
+			? ((task.timeSpent + additionalMinutes) / task.goalTime) * 100
+			: 0;
 	}
 
 	function stopTimer() {
@@ -52,17 +60,17 @@
 >
 	<!-- Add progress background -->
 	<div
-		class="absolute inset-0 transition-all duration-300"
+		class="absolute inset-0"
 		class:bg-green-500={!isOvertime}
-		class:bg-red-500={isOvertime}
-		style:width="{Math.min(progressPercentage, 100)}%"
-		style="opacity: 0.15"
+		class:bg-yellow-500={isOvertime}
+		style:width="{Math.min(currentProgressPercentage, 100)}%"
+		style="opacity: 0.95"
 	></div>
 
 	<!-- Add white/dark background that sits on top of the progress bar -->
 	<div
 		class="absolute inset-0 bg-white dark:bg-neutral-700"
-		style="z-index: 0; opacity: 0.15"
+		style="z-index: 0; opacity: 0.85"
 	></div>
 
 	<!-- Main content - make sure it's above the backgrounds -->

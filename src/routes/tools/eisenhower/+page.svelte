@@ -3,7 +3,7 @@
 	import { flip } from 'svelte/animate';
 	import type { DndEvent } from 'svelte-dnd-action';
 	import { fade } from 'svelte/transition';
-	import { createDefaultTask, taskStore } from '$lib/stores/taskStore';
+	import { taskStore } from '$lib/stores/taskStore';
 	import { QuadrantTypes } from '$lib/types';
 	import type { QuadrantType, Task } from '$lib/types';
 
@@ -24,7 +24,6 @@
 	let undoTimeout: ReturnType<typeof setTimeout>;
 
 	const flipDurationMs = 150;
-	let newTaskText = '';
 
 	let unassignedTasks: Task[] = [];
 	let urgentImportant: Task[] = [];
@@ -45,18 +44,6 @@
 		notUrgentNotImportant = $taskStore.filter(
 			(t) => t.quadrant === QuadrantTypes.NOT_URGENT_NOT_IMPORTANT
 		);
-	}
-
-	function addTask() {
-		if (newTaskText.trim()) {
-			taskStore.addTask(
-				createDefaultTask({
-					title: newTaskText,
-					quadrant: QuadrantTypes.UNASSIGNED
-				})
-			);
-			newTaskText = '';
-		}
 	}
 
 	function removeTask(taskId: string) {
@@ -119,19 +106,15 @@
 
 		<!-- Add new task form -->
 		<div class="mb-4">
-			<input
-				type="text"
-				bind:value={newTaskText}
-				placeholder="New task..."
-				class="mb-2 w-full rounded border p-2 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-100"
-				on:keydown={(e) => e.key === 'Enter' && addTask()}
+			<CreateTaskButton onClick={() => (showCreateModal = true)} />
+
+			<CreateTaskModal
+				show={showCreateModal}
+				on:close={() => (showCreateModal = false)}
+				on:save={handleCreateTask}
+				initialQuadrant="unassigned"
+				initialStatus="todo"
 			/>
-			<button
-				on:click={addTask}
-				class="w-full rounded bg-gray-200 p-2 text-blue-500 transition-all hover:bg-blue-600 hover:text-white dark:bg-neutral-700 dark:hover:bg-blue-600"
-			>
-				Add Task
-			</button>
 		</div>
 
 		<!-- Unassigned tasks -->
@@ -282,15 +265,4 @@
 			</button>
 		</div>
 	{/if}
-	<div>
-		<CreateTaskButton onClick={() => (showCreateModal = true)} />
-
-		<CreateTaskModal
-			show={showCreateModal}
-			on:close={() => (showCreateModal = false)}
-			on:save={handleCreateTask}
-			initialQuadrant="urgent-important"
-			initialStatus="todo"
-		/>
-	</div>
 </div>

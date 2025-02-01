@@ -4,8 +4,8 @@
 
 <button
 	on:click={() => removeTask()}
-	class="absolute right-2 top-3 text-red-500 transition-all hover:text-red-700 md:opacity-0 md:group-hover:opacity-100"
-	aria-label="Delte"
+	class="text-neutral-400 transition-all duration-200 hover:text-red-500 md:opacity-0 md:group-hover:opacity-100"
+	aria-label="Delete task"
 >
 	<svg
 		xmlns="http://www.w3.org/2000/svg"
@@ -13,7 +13,7 @@
 		viewBox="0 0 24 24"
 		stroke-width="1.5"
 		stroke="currentColor"
-		class="size-4"
+		class="size-5"
 	>
 		<path
 			stroke-linecap="round"

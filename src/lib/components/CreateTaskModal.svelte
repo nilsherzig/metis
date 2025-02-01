@@ -95,7 +95,7 @@
 						id="priority"
 						bind:value={task.priority}
 						min="0"
-						max="10"
+						max="4"
 						class="w-full"
 					/>
 				</div>
