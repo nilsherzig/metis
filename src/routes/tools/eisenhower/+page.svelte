@@ -2,6 +2,7 @@
 	import { dndzone } from 'svelte-dnd-action';
 	import { flip } from 'svelte/animate';
 	import type { DndEvent } from 'svelte-dnd-action';
+	import DeleteItemButton from '$lib/components/deleteItemButton.svelte';
 
 	interface Task {
 		id: number;
@@ -137,7 +138,7 @@
 			/>
 			<button
 				on:click={addTask}
-				class="w-full rounded bg-blue-500 p-2 text-white hover:bg-blue-600"
+				class="w-full rounded bg-gray-200 p-2 text-blue-500 transition-all hover:bg-blue-600 hover:text-white"
 			>
 				Add Task
 			</button>
@@ -157,12 +158,7 @@
 					class="group relative mb-2 cursor-move rounded bg-gray-50 p-2 shadow"
 				>
 					{item.text}
-					<button
-						on:click={() => removeTask(item.id, item.quadrant)}
-						class="absolute right-2 top-2 text-red-500 opacity-0 hover:text-red-700 group-hover:opacity-100"
-					>
-						×
-					</button>
+					<DeleteItemButton removeTask={() => removeTask(item.id, item.quadrant)} />
 				</div>
 			{/each}
 		</div>
@@ -187,12 +183,7 @@
 							class="group relative mb-2 cursor-move rounded bg-white p-2 shadow"
 						>
 							{item.text}
-							<button
-								on:click={() => removeTask(item.id, item.quadrant)}
-								class="absolute right-2 top-2 text-red-500 opacity-0 hover:text-red-700 group-hover:opacity-100"
-							>
-								×
-							</button>
+							<DeleteItemButton removeTask={() => removeTask(item.id, item.quadrant)} />
 						</div>
 					{/each}
 				</div>
@@ -212,12 +203,7 @@
 							class="group relative mb-2 cursor-move rounded bg-white p-2 shadow"
 						>
 							{item.text}
-							<button
-								on:click={() => removeTask(item.id, item.quadrant)}
-								class="absolute right-2 top-2 text-red-500 opacity-0 hover:text-red-700 group-hover:opacity-100"
-							>
-								×
-							</button>
+							<DeleteItemButton removeTask={() => removeTask(item.id, item.quadrant)} />
 						</div>
 					{/each}
 				</div>
@@ -237,12 +223,7 @@
 							class="group relative mb-2 cursor-move rounded bg-white p-2 shadow"
 						>
 							{item.text}
-							<button
-								on:click={() => removeTask(item.id, item.quadrant)}
-								class="absolute right-2 top-2 text-red-500 opacity-0 hover:text-red-700 group-hover:opacity-100"
-							>
-								×
-							</button>
+							<DeleteItemButton removeTask={() => removeTask(item.id, item.quadrant)} />
 						</div>
 					{/each}
 				</div>
@@ -262,12 +243,7 @@
 							class="group relative mb-2 cursor-move rounded bg-white p-2 shadow"
 						>
 							{item.text}
-							<button
-								on:click={() => removeTask(item.id, item.quadrant)}
-								class="absolute right-2 top-2 text-red-500 opacity-0 hover:text-red-700 group-hover:opacity-100"
-							>
-								×
-							</button>
+							<DeleteItemButton removeTask={() => removeTask(item.id, item.quadrant)} />
 						</div>
 					{/each}
 				</div>
