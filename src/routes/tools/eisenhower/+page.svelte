@@ -7,10 +7,15 @@
 	import { createDefaultTask, taskStore } from '$lib/stores/taskStore';
 	import { QuadrantTypes } from '$lib/types';
 	import type { QuadrantType, Task } from '$lib/types';
+	import TaskItem from '$lib/components/TaskItem.svelte';
 
 	let lastDeletedTask: Task | null = null;
-	let showUndo = false;
-	let undoTimeout: ReturnType<typeof setTimeout>;
+	let showUndoDelete = false;
+	let undoDeleteTimeout: ReturnType<typeof setTimeout>;
+
+	let lastFinishedTaskID: string | null = null;
+	let showUndoFinish = false;
+	let undoFinishTimeout: ReturnType<typeof setTimeout>;
 
 	const flipDurationMs = 150;
 	let newTaskText = '';
@@ -48,28 +53,52 @@
 		}
 	}
 
-	function removeTask(taskId: string) {
+	function deleteTask(taskId: string) {
 		const task = $taskStore.find((t) => t.id === taskId);
 		if (task) {
 			lastDeletedTask = task;
-			showUndo = true;
+			showUndoDelete = true;
 
-			if (undoTimeout) clearTimeout(undoTimeout);
+			if (undoFinishTimeout) clearTimeout(undoFinishTimeout);
 
-			undoTimeout = setTimeout(() => {
-				showUndo = false;
+			undoDeleteTimeout = setTimeout(() => {
+				showUndoDelete = false;
 				lastDeletedTask = null;
 			}, 5000);
 		}
 		taskStore.removeTask(taskId);
 	}
 
-	function undoDelete() {
+	function undoDeleteTask() {
 		if (!lastDeletedTask) return;
 		taskStore.addTask(lastDeletedTask);
-		showUndo = false;
+		showUndoDelete = false;
 		lastDeletedTask = null;
-		if (undoTimeout) clearTimeout(undoTimeout);
+		if (undoDeleteTimeout) clearTimeout(undoDeleteTimeout);
+	}
+
+	function finishTask(taskId: string) {
+		const task = $taskStore.find((t) => t.id === taskId);
+		if (task) {
+			lastFinishedTaskID = taskId;
+			showUndoFinish = true;
+
+			if (undoFinishTimeout) clearTimeout(undoFinishTimeout);
+
+			undoFinishTimeout = setTimeout(() => {
+				showUndoFinish = false;
+				lastFinishedTaskID = null;
+			}, 5000);
+		}
+		taskStore.toggleComplete(taskId);
+	}
+
+	function undoFinishTask() {
+		if (!lastFinishedTaskID) return;
+		taskStore.toggleComplete(lastFinishedTaskID);
+		showUndoFinish = false;
+		lastFinishedTaskID = null;
+		if (undoFinishTimeout) clearTimeout(undoFinishTimeout);
 	}
 
 	function handleDndConsider(e: CustomEvent<DndEvent<Task>>, quadrant: string) {
@@ -101,9 +130,9 @@
 	}
 </script>
 
-<div class="flex flex-col gap-4 p-4 md:flex-row dark:bg-neutral-900">
+<div class="flex flex-col gap-4 p-4 dark:bg-neutral-900 md:flex-row">
 	<!-- Sidebar -->
-	<div class="w-full rounded-lg bg-gray-100 p-4 md:w-64 dark:bg-neutral-800 dark:text-neutral-100">
+	<div class="w-full rounded-lg bg-gray-100 p-4 dark:bg-neutral-800 dark:text-neutral-100 md:w-64">
 		<h2 class="mb-4 text-lg font-bold">Tasks</h2>
 
 		<!-- Add new task form -->
@@ -136,14 +165,16 @@
 			on:finalize={(e) => handleDndFinalize(e, 'unassigned')}
 			class="min-h-[100px]"
 		>
-			{#each unassignedTasks as item (item.id)}
-				<div
-					animate:flip={{ duration: flipDurationMs }}
-					class="group relative mb-2 cursor-move rounded bg-gray-50 p-2 shadow dark:bg-neutral-700 dark:text-neutral-100"
-				>
-					{item.title}
-					<DeleteItemButton removeTask={() => removeTask(item.id)} />
-				</div>
+			{#each unassignedTasks as task (task.id)}
+				<TaskItem
+					{task}
+					toggleTask={() => {
+						finishTask(task.id);
+					}}
+					deleteTask={() => {
+						deleteTask(task.id);
+					}}
+				/>
 			{/each}
 		</div>
 	</div>
@@ -164,14 +195,16 @@
 					on:finalize={(e) => handleDndFinalize(e, 'urgent-important')}
 					class="min-h-[200px]"
 				>
-					{#each urgentImportant as item (item.id)}
-						<div
-							animate:flip={{ duration: flipDurationMs }}
-							class="group relative mb-2 cursor-move rounded bg-white p-2 shadow dark:bg-neutral-700 dark:text-neutral-100"
-						>
-							{item.title}
-							<DeleteItemButton removeTask={() => removeTask(item.id)} />
-						</div>
+					{#each urgentImportant as task (task.id)}
+						<TaskItem
+							{task}
+							toggleTask={() => {
+								finishTask(task.id);
+							}}
+							deleteTask={() => {
+								deleteTask(task.id);
+							}}
+						/>
 					{/each}
 				</div>
 			</div>
@@ -182,7 +215,6 @@
 					use:dndzone={{
 						items: notUrgentImportant,
 						flipDurationMs,
-
 						dropTargetStyle: {},
 						dropTargetClasses: [
 							'rounded',
@@ -195,14 +227,16 @@
 					on:finalize={(e) => handleDndFinalize(e, 'not-urgent-important')}
 					class="min-h-[200px]"
 				>
-					{#each notUrgentImportant as item (item.id)}
-						<div
-							animate:flip={{ duration: flipDurationMs }}
-							class="group relative mb-2 cursor-move rounded bg-white p-2 shadow dark:bg-neutral-700 dark:text-neutral-100"
-						>
-							{item.title}
-							<DeleteItemButton removeTask={() => removeTask(item.id)} />
-						</div>
+					{#each notUrgentImportant as task (task.id)}
+						<TaskItem
+							{task}
+							toggleTask={() => {
+								finishTask(task.id);
+							}}
+							deleteTask={() => {
+								deleteTask(task.id);
+							}}
+						/>
 					{/each}
 				</div>
 			</div>
@@ -220,14 +254,16 @@
 					on:finalize={(e) => handleDndFinalize(e, 'urgent-not-important')}
 					class="min-h-[200px]"
 				>
-					{#each urgentNotImportant as item (item.id)}
-						<div
-							animate:flip={{ duration: flipDurationMs }}
-							class="group relative mb-2 cursor-move rounded bg-white p-2 shadow dark:bg-neutral-700 dark:text-neutral-100"
-						>
-							{item.title}
-							<DeleteItemButton removeTask={() => removeTask(item.id)} />
-						</div>
+					{#each urgentNotImportant as task (task.id)}
+						<TaskItem
+							{task}
+							toggleTask={() => {
+								finishTask(task.id);
+							}}
+							deleteTask={() => {
+								deleteTask(task.id);
+							}}
+						/>
 					{/each}
 				</div>
 			</div>
@@ -245,20 +281,22 @@
 					on:finalize={(e) => handleDndFinalize(e, 'not-urgent-not-important')}
 					class="min-h-[200px]"
 				>
-					{#each notUrgentNotImportant as item (item.id)}
-						<div
-							animate:flip={{ duration: flipDurationMs }}
-							class="group relative mb-2 cursor-move rounded bg-white p-2 shadow dark:bg-neutral-700 dark:text-neutral-100"
-						>
-							{item.title}
-							<DeleteItemButton removeTask={() => removeTask(item.id)} />
-						</div>
+					{#each notUrgentNotImportant as task (task.id)}
+						<TaskItem
+							{task}
+							toggleTask={() => {
+								finishTask(task.id);
+							}}
+							deleteTask={() => {
+								deleteTask(task.id);
+							}}
+						/>
 					{/each}
 				</div>
 			</div>
 		</div>
 	</div>
-	{#if showUndo && lastDeletedTask}
+	{#if showUndoFinish && lastFinishedTaskID}
 		<div
 			class="fixed bottom-4 left-4 flex items-center gap-2 rounded bg-neutral-200 px-4 py-2 shadow transition-all dark:bg-neutral-700 dark:text-neutral-100"
 			in:fade
@@ -266,12 +304,12 @@
 		>
 			<span>
 				<span class="font-bold">
-					{lastDeletedTask.title}
-				</span> deleted</span
+					{$taskStore.filter((t) => t.id == lastFinishedTaskID)[0].title}
+				</span> finished</span
 			>
 			<button
 				class="font-medium transition-all hover:text-blue-400"
-				on:click={undoDelete}
+				on:click={undoFinishTask}
 				aria-label="Undo"
 			>
 				<svg
@@ -285,7 +323,40 @@
 					<path
 						stroke-linecap="round"
 						stroke-linejoin="round"
-						d="M21 16.811c0 .864-.933 1.406-1.683.977l-7.108-4.061a1.125 1.125 0 0 1 0-1.954l7.108-4.061A1.125 1.125 0 0 1 21 8.689v8.122ZM11.25 16.811c0 .864-.933 1.406-1.683.977l-7.108-4.061a1.125 1.125 0 0 1 0-1.954l7.108-4.061a1.125 1.125 0 0 1 1.683.977v8.122Z"
+						d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3"
+					/>
+				</svg>
+			</button>
+		</div>
+	{/if}
+	{#if showUndoDelete && lastDeletedTask}
+		<div
+			class="fixed bottom-4 left-4 flex items-center gap-2 rounded bg-neutral-200 px-4 py-2 shadow transition-all dark:bg-neutral-700 dark:text-neutral-100"
+			in:fade
+			out:fade
+		>
+			<span>
+				<span class="font-bold">
+					{lastDeletedTask.title}
+				</span> removed</span
+			>
+			<button
+				class="font-medium transition-all hover:text-blue-400"
+				on:click={undoDeleteTask}
+				aria-label="Undo"
+			>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					fill="none"
+					viewBox="0 0 24 24"
+					stroke-width="1.5"
+					stroke="currentColor"
+					class="size-5"
+				>
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3"
 					/>
 				</svg>
 			</button>
